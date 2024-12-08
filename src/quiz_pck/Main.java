@@ -2,7 +2,9 @@ package quiz_pck;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 //Files
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -10,10 +12,15 @@ import java.io.IOException;
 
 //Maps
 import java.util.Map;
+import java.util.LinkedHashMap;
 
+//audio
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.JButton;
 
-import java.util.LinkedHashMap;
+
 
 public class Main {
 	public static void main(String[] args)
@@ -21,8 +28,9 @@ public class Main {
 		GUI newGUI = new GUI("Quiz");
 		JButton start_button = newGUI.addButton("Start");
 		newGUI.addLabel("Let's start some quizs!");
+		
+		new Music();
 		start_button.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				newGUI.dispose();
@@ -31,7 +39,24 @@ public class Main {
 			}
 		});
 	}
+}
 
+class Music{
+	Music(){
+		try {
+			File musicPath = new File("BG_Song.wav");
+			if (musicPath.exists()) {
+				AudioInputStream audioInput = AudioSystem.getAudioInputStream(musicPath);
+				Clip clip = AudioSystem.getClip();
+				clip.open(audioInput);
+				clip.start();
+				clip.loop(Clip.LOOP_CONTINUOUSLY);
+			}
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
 }
 
 class Quiz {
