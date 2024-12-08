@@ -1,36 +1,45 @@
 package quiz_pck;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 //Files
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
 //Maps
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
+
+import javax.swing.JButton;
+
 import java.util.LinkedHashMap;
 
 public class Main {
 	public static void main(String[] args)
 	{
-		GUI newGUI = new GUI();
+		GUI newGUI = new GUI("Quiz");
+		JButton start_button = newGUI.addButton("Start");
 		newGUI.addLabel("Let's start some quizs!");
-		Quiz q = new Quiz();
-		q.logic();	
+		start_button.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				newGUI.dispose();
+				Quiz q = new Quiz();
+				q.logic();
+			}
+		});
 	}
 
 }
 
-class Quiz{
+class Quiz {
 	public void logic() {
-		Scanner scanner = new Scanner(System.in);
 		Questions question1 = new Questions("What is 1+1","1","2","3","4");
 		Questions question2 = new Questions("What is 1+2","1","2","3","4");
 		Questions question3 = new Questions("What is 1+3","1","2","3","4");
-			
+		
 		int point = 0;
 		
 		try {
@@ -52,41 +61,20 @@ class Quiz{
 			e.printStackTrace();
 		}
 		
-		Map<Questions,String> quizziz = new LinkedHashMap<>();
-		quizziz.put(question1, "B");
-		quizziz.put(question2, "C");
-		quizziz.put(question3, "D");
+		Map<Questions,Character> quizziz = new LinkedHashMap<>();
+		quizziz.put(question1, 'B');
+		quizziz.put(question2, 'C');
+		quizziz.put(question3, 'D');
 		
-		Character[] ans_map = {'A','B','C','D'};
-		
-		for (Map.Entry<Questions, String> set : quizziz.entrySet()) {
-			System.out.println("Your answer?");
-			System.out.println(set.getKey().GetQuestion());
+		for (Map.Entry<Questions, Character> set : quizziz.entrySet()) {		
 			String[] options = set.getKey().GetOptions();
+			Character ans = set.getValue();
 			
-			for (int i = 0; i < options.length; i++) {
-				System.out.println(ans_map[i]+"."+options[i]);
-			}
-			String ans = scanner.next();
+			Question_GUI question = new Question_GUI("Questions",ans);
+			question.addLabel(set.getKey().GetQuestion());
 			
-			if (ans.equals(set.getValue())){
-				System.out.println("CORRECT!!!");
-				point++;
-			}else {
-				System.out.println("WRONG!!!");
-			}
-			
-			
-			try {
-				FileWriter writer = new FileWriter("QuizScore.txt");
-				writer.write("You got: "+point+" points");
-				writer.close();
-			}catch(IOException e) {
-				e.printStackTrace();
-			}
+			question.addOptions(options);
 		}
 		
-		System.out.println("You completed the quiz!");
-		scanner.close();
 	}
 }
